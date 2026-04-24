@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spanish Travel Quiz</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="ocean-bg">
+    <div class="wave wave1"></div>
+    <div class="wave wave2"></div>
+  </div>
+
+  <main class="container">
+    <header>
+      <h1>¡Hola, Viajero!</h1>
+      <p class="subtitle">Spanish Travel Phrase Quiz</p>
+    </header>
+
+    <div id="start-screen" class="card">
+      <p class="intro">Practice 20 essential Spanish phrases for your Mediterranean vacation. Choose the correct English translation for each one.</p>
+      <div class="flag">🏖️</div>
+      <button id="start-btn" class="btn btn-primary">Start Quiz</button>
+    </div>
+
+    <div id="quiz-screen" class="card hidden">
+      <div class="progress-bar-wrap">
+        <div id="progress-bar" class="progress-bar"></div>
+      </div>
+      <div class="progress-label">
+        <span id="question-count">Question 1 of 20</span>
+        <span id="score-label">Score: 0</span>
+      </div>
+      <div id="question-box">
+        <p class="prompt">What does this mean in English?</p>
+        <h2 id="spanish-phrase"></h2>
+      </div>
+      <div id="choices" class="choices"></div>
+      <div id="feedback" class="feedback hidden"></div>
+      <button id="next-btn" class="btn btn-primary hidden">Next →</button>
+    </div>
+
+    <div id="result-screen" class="card hidden">
+      <div class="flag" id="result-icon">🎉</div>
+      <h2 id="result-title"></h2>
+      <p id="result-message"></p>
+      <p class="final-score">You scored <strong id="final-score"></strong> out of 20</p>
+      <button id="restart-btn" class="btn btn-primary">Try Again</button>
+    </div>
+  </main>
+
+  <script src="quiz.js"></script>
+</body>
+</html>
