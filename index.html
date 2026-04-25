@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Spanish Travel Quiz</title>
+  <title>Language Travel Quiz</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
+<body class="lang-es">
   <div class="ocean-bg">
     <div class="wave wave1"></div>
     <div class="wave wave2"></div>
@@ -14,33 +14,51 @@
 
   <main class="container">
     <header>
-      <h1>¡Hola, Viajero!</h1>
-      <p class="subtitle">Spanish Travel Phrase Quiz</p>
+      <h1 id="header-title">¡Hola, Viajero!</h1>
+      <p class="subtitle" id="header-subtitle">Spanish Travel Phrase Quiz</p>
     </header>
 
+    <!-- ── Start screen ── -->
     <div id="start-screen" class="card">
-      <p class="intro">Practice 20 essential Spanish phrases for your Mediterranean vacation. Choose the correct English translation for each one.</p>
-      <div class="flag">🏖️</div>
+
+      <!-- Language selector tabs -->
+      <div class="lang-tabs" role="tablist" aria-label="Choose a language">
+        <button class="lang-tab active" data-lang="es" role="tab" aria-selected="true">
+          <span class="tab-flag">🇪🇸</span> Spanish
+        </button>
+        <button class="lang-tab" data-lang="fr" role="tab" aria-selected="false">
+          <span class="tab-flag">🇫🇷</span> French
+        </button>
+      </div>
+
+      <p class="intro" id="start-intro">
+        Practice 20 essential Spanish phrases for your Mediterranean vacation.
+        Choose the correct English translation for each one.
+      </p>
+      <div class="flag" id="start-emoji">🏖️</div>
       <button id="start-btn" class="btn btn-primary">Start Quiz</button>
     </div>
 
+    <!-- ── Quiz screen ── -->
     <div id="quiz-screen" class="card hidden">
       <div class="progress-bar-wrap">
         <div id="progress-bar" class="progress-bar"></div>
       </div>
       <div class="progress-label">
         <span id="question-count">Question 1 of 20</span>
+        <span id="lang-badge" class="lang-badge">🇪🇸 Spanish</span>
         <span id="score-label">Score: 0</span>
       </div>
       <div id="question-box">
-        <p class="prompt">What does this mean in English?</p>
-        <h2 id="spanish-phrase"></h2>
+        <p class="prompt" id="quiz-prompt">What does this Spanish phrase mean?</p>
+        <h2 id="phrase"></h2>
       </div>
       <div id="choices" class="choices"></div>
       <div id="feedback" class="feedback hidden"></div>
       <button id="next-btn" class="btn btn-primary hidden">Next →</button>
     </div>
 
+    <!-- ── Results screen ── -->
     <div id="result-screen" class="card hidden">
       <div class="flag" id="result-icon">🎉</div>
       <h2 id="result-title"></h2>

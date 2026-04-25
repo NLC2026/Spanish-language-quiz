@@ -1,18 +1,40 @@
-/* Mediterranean beach palette:
-   Deep ocean: #0077b6
-   Turquoise:  #00b4d8
-   Sky/foam:   #90e0ef
-   Sand:       #fdf0d5
-   Coral:      #f4845f
-   Dark navy:  #023047
-*/
+/* ─── Palette ────────────────────────────────────────────────────────────────
+   Shared:    Sand #fdf0d5  |  Dark navy #023047  |  Success green  |  Error red
+   Spanish:   Ocean blue #0077b6  /  Turquoise #00b4d8  /  Sky foam #caf0f8
+   French:    French navy #002395  /  French blue #3a6bc4  /  Lavender #dce3f5
+   ────────────────────────────────────────────────────────────────────────── */
 
+/* ── CSS custom properties (Spanish defaults) ── */
+:root {
+  --primary:        #0077b6;
+  --secondary:      #00b4d8;
+  --light:          #caf0f8;
+  --light-hover:    #e8f9fd;
+  --choice-border:  #90e0ef;
+  --progress-grad:  linear-gradient(90deg,  #0077b6, #00b4d8);
+  --btn-grad:       linear-gradient(135deg, #0077b6, #00b4d8);
+  --bg-grad:        linear-gradient(180deg, #90e0ef 0%, #00b4d8 50%, #0077b6 100%);
+}
+
+/* ── French overrides ── */
+body.lang-fr {
+  --primary:        #002395;
+  --secondary:      #3a6bc4;
+  --light:          #dce3f5;
+  --light-hover:    #eaeefc;
+  --choice-border:  #a8bfec;
+  --progress-grad:  linear-gradient(90deg,  #002395, #3a6bc4);
+  --btn-grad:       linear-gradient(135deg, #002395, #3a6bc4);
+  --bg-grad:        linear-gradient(180deg, #c9d9f5 0%, #5b85cc 50%, #002395 100%);
+}
+
+/* ── Reset ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
   font-family: 'Segoe UI', system-ui, sans-serif;
   min-height: 100vh;
-  background: #caf0f8;
+  background: var(--light);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -20,15 +42,17 @@ body {
   padding: 1rem;
   position: relative;
   overflow-x: hidden;
+  transition: background 0.4s;
 }
 
-/* Animated ocean waves in background */
+/* ── Animated ocean waves ── */
 .ocean-bg {
   position: fixed;
   inset: 0;
   z-index: 0;
-  background: linear-gradient(180deg, #90e0ef 0%, #00b4d8 50%, #0077b6 100%);
+  background: var(--bg-grad);
   overflow: hidden;
+  transition: background 0.5s;
 }
 
 .wave {
@@ -54,7 +78,7 @@ body {
   to   { transform: translateX(-50%); }
 }
 
-/* Layout */
+/* ── Layout ── */
 .container {
   position: relative;
   z-index: 1;
@@ -73,6 +97,7 @@ header h1 {
   font-size: 2.4rem;
   font-weight: 800;
   letter-spacing: -0.5px;
+  transition: opacity 0.2s;
 }
 
 header .subtitle {
@@ -83,17 +108,63 @@ header .subtitle {
   letter-spacing: 2px;
 }
 
-/* Card */
+/* ── Card ── */
 .card {
   background: #fdf0d5;
   border-radius: 20px;
   padding: 2rem;
-  box-shadow: 0 8px 32px rgba(0, 55, 80, 0.25);
+  box-shadow: 0 8px 32px rgba(0, 30, 80, 0.25);
 }
 
 .hidden { display: none !important; }
 
-/* Start screen */
+/* ── Language tabs ── */
+.lang-tabs {
+  display: flex;
+  gap: 0.5rem;
+  background: #f0e4c4;
+  border-radius: 12px;
+  padding: 0.35rem;
+  margin-bottom: 1.5rem;
+}
+
+.lang-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.6rem 0.75rem;
+  border: none;
+  border-radius: 9px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: transparent;
+  color: #6b5a3e;
+  font-family: inherit;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.lang-tab .tab-flag { font-size: 1.15rem; }
+
+.lang-tab.active {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+}
+
+.lang-tab:not(.active):hover {
+  background: rgba(0,0,0,0.07);
+  color: #3a2e1e;
+}
+
+/* French tab active — red underline accent to evoke the tricolore */
+body.lang-fr .lang-tab[data-lang="fr"].active {
+  border-bottom: 3px solid #ED2939;
+}
+
+/* ── Start screen ── */
 .intro {
   color: #023047;
   font-size: 1.05rem;
@@ -108,9 +179,9 @@ header .subtitle {
   margin-bottom: 1.5rem;
 }
 
-/* Progress */
+/* ── Progress ── */
 .progress-bar-wrap {
-  background: #caf0f8;
+  background: var(--light);
   border-radius: 99px;
   height: 8px;
   overflow: hidden;
@@ -119,7 +190,7 @@ header .subtitle {
 
 .progress-bar {
   height: 100%;
-  background: linear-gradient(90deg, #0077b6, #00b4d8);
+  background: var(--progress-grad);
   border-radius: 99px;
   width: 5%;
   transition: width 0.4s ease;
@@ -128,18 +199,32 @@ header .subtitle {
 .progress-label {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   font-size: 0.82rem;
-  color: #0077b6;
+  color: var(--primary);
   font-weight: 600;
   margin-bottom: 1.5rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-/* Question */
+/* ── Language badge (shown during quiz) ── */
+.lang-badge {
+  background: var(--primary);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.25rem 0.65rem;
+  border-radius: 99px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  text-transform: none;
+}
+
+/* ── Question ── */
 .prompt {
   text-align: center;
-  color: #0077b6;
+  color: var(--primary);
   font-size: 0.85rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -147,7 +232,7 @@ header .subtitle {
   margin-bottom: 0.5rem;
 }
 
-#spanish-phrase {
+#phrase {
   text-align: center;
   font-size: 1.75rem;
   font-weight: 700;
@@ -156,7 +241,7 @@ header .subtitle {
   line-height: 1.3;
 }
 
-/* Choices */
+/* ── Choices ── */
 .choices {
   display: flex;
   flex-direction: column;
@@ -166,7 +251,7 @@ header .subtitle {
 
 .choice-btn {
   background: #fff;
-  border: 2px solid #90e0ef;
+  border: 2px solid var(--choice-border);
   border-radius: 12px;
   padding: 0.75rem 1rem;
   font-size: 0.97rem;
@@ -178,8 +263,8 @@ header .subtitle {
 }
 
 .choice-btn:hover:not(:disabled) {
-  border-color: #00b4d8;
-  background: #e8f9fd;
+  border-color: var(--secondary);
+  background: var(--light-hover);
   transform: translateY(-1px);
 }
 
@@ -198,7 +283,7 @@ header .subtitle {
 
 .choice-btn:disabled { cursor: default; transform: none; }
 
-/* Feedback */
+/* ── Feedback ── */
 .feedback {
   text-align: center;
   font-weight: 600;
@@ -211,7 +296,7 @@ header .subtitle {
 .feedback.correct { background: #d8f3dc; color: #1b4332; }
 .feedback.wrong   { background: #fde8e4; color: #7d1e0e; }
 
-/* Buttons */
+/* ── Buttons ── */
 .btn {
   display: block;
   width: 100%;
@@ -225,24 +310,26 @@ header .subtitle {
   transition: opacity 0.15s, transform 0.1s;
 }
 
-.btn:hover { opacity: 0.88; transform: translateY(-1px); }
+.btn:hover  { opacity: 0.88; transform: translateY(-1px); }
 .btn:active { transform: translateY(0); }
 
 .btn-primary {
-  background: linear-gradient(135deg, #0077b6, #00b4d8);
+  background: var(--btn-grad);
   color: #fff;
   letter-spacing: 0.5px;
 }
 
-/* Results */
+/* ── Results ── */
 #result-screen { text-align: center; }
 #result-screen h2 { font-size: 1.6rem; color: #023047; margin-bottom: 0.5rem; }
-#result-screen p  { color: #0077b6; font-size: 1rem; margin-bottom: 0.5rem; line-height: 1.5; }
+#result-screen p  { color: var(--primary); font-size: 1rem; margin-bottom: 0.5rem; line-height: 1.5; }
 .final-score { font-size: 1.1rem !important; margin: 1rem 0 1.5rem !important; }
 .final-score strong { color: #023047; font-size: 1.3rem; }
 
+/* ── Responsive ── */
 @media (max-width: 480px) {
-  header h1 { font-size: 1.9rem; }
-  #spanish-phrase { font-size: 1.4rem; }
-  .card { padding: 1.5rem; }
+  header h1     { font-size: 1.9rem; }
+  #phrase        { font-size: 1.4rem; }
+  .card          { padding: 1.5rem; }
+  .lang-tab      { font-size: 0.88rem; }
 }
