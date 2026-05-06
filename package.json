@@ -1,0 +1,12 @@
+{
+  "name": "language-travel-quiz",
+  "version": "1.0.0",
+  "description": "Spanish & French travel phrase quiz with SQLite backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

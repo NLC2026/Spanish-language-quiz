@@ -21,6 +21,20 @@
     <!-- ── Start screen ── -->
     <div id="start-screen" class="card">
 
+      <!-- Player name -->
+      <div class="name-field">
+        <label class="name-label" for="player-name">Your name</label>
+        <input
+          type="text"
+          id="player-name"
+          class="name-input"
+          placeholder="e.g. Sandra"
+          maxlength="40"
+          autocomplete="off"
+          spellcheck="false"
+        />
+      </div>
+
       <!-- Language selector tabs -->
       <div class="lang-tabs" role="tablist" aria-label="Choose a language">
         <button class="lang-tab active" data-lang="es" role="tab" aria-selected="true">
@@ -36,7 +50,8 @@
         Choose the correct English translation for each one.
       </p>
       <div class="flag" id="start-emoji">🏖️</div>
-      <button id="start-btn" class="btn btn-primary">Start Quiz</button>
+      <button id="start-btn" class="btn btn-primary" disabled>Start Quiz</button>
+      <a href="/history.html" class="history-link">📊 View my history</a>
     </div>
 
     <!-- ── Quiz screen ── -->
@@ -65,8 +80,12 @@
       <p id="result-message"></p>
       <p class="final-score">You scored <strong id="final-score"></strong> out of 20</p>
       <button id="restart-btn" class="btn btn-primary">Try Again</button>
+      <a href="/history.html" class="history-link">📊 View my history</a>
     </div>
   </main>
+
+  <!-- Offline save toast -->
+  <div id="save-toast" class="save-toast" role="alert" aria-live="polite"></div>
 
   <script src="quiz.js"></script>
 </body>

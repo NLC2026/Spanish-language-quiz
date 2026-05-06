@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Quiz History</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="lang-es">
+  <div class="ocean-bg">
+    <div class="wave wave1"></div>
+    <div class="wave wave2"></div>
+  </div>
+
+  <main class="container container--wide">
+    <header>
+      <h1>📊 Quiz History</h1>
+      <p class="subtitle">
+        <a href="/" class="back-link">← Back to Quiz</a>
+      </p>
+    </header>
+
+    <!-- Search card -->
+    <div class="card">
+      <div class="name-field">
+        <label class="name-label" for="history-name">Your name</label>
+        <div class="history-search-row">
+          <input
+            type="text"
+            id="history-name"
+            class="name-input"
+            placeholder="e.g. Sandra"
+            maxlength="40"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button id="load-btn" class="btn btn-primary btn--inline">Load History</button>
+        </div>
+      </div>
+
+      <!-- Error -->
+      <p id="history-error" class="history-error hidden"></p>
+
+      <!-- Content (hidden until loaded) -->
+      <div id="history-content" class="hidden">
+
+        <!-- Quiz attempt summaries -->
+        <section class="history-section">
+          <h3 class="section-title">Quiz Attempts</h3>
+          <p id="no-summaries" class="no-data hidden">No quiz attempts recorded yet. Go take a quiz!</p>
+          <div class="table-wrap" id="summaries-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date &amp; Time</th>
+                  <th>Language</th>
+                  <th>Score</th>
+                  <th>%</th>
+                </tr>
+              </thead>
+              <tbody id="summaries-body"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Individual question log -->
+        <section class="history-section">
+          <h3 class="section-title">Question Log</h3>
+          <p id="no-answers" class="no-data hidden">No individual answers recorded yet.</p>
+          <div class="table-wrap" id="answers-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Phrase</th>
+                  <th>Your Answer</th>
+                  <th>Correct Answer</th>
+                  <th>Result</th>
+                  <th>Date &amp; Time</th>
+                </tr>
+              </thead>
+              <tbody id="answers-body"></tbody>
+            </table>
+          </div>
+        </section>
+
+      </div><!-- /history-content -->
+    </div><!-- /card -->
+  </main>
+
+  <script src="history.js"></script>
+</body>
+</html>

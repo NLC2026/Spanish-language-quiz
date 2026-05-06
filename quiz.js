@@ -78,10 +78,10 @@ const LANG_CONFIG = {
     prompt:     'What does this French phrase mean?',
     correct:    '✓ Correct !',
     results: {
-      perfect:  { icon: '🏆', title: 'Parfait !',            msg: 'Flawless! The whole Côte d\'Azur will be impressed.' },
-      great:    { icon: '🌊', title: 'Excellent !',           msg: 'Almost perfect — you\'ll have no trouble on your vacation!' },
-      good:     { icon: '🏖️', title: 'Très bien !',           msg: 'Solid effort! A little more practice and you\'ll feel right at home in France.' },
-      ok:       { icon: '🐚', title: 'Pas mal.',              msg: 'Not bad! Keep practising and those phrases will stick.' },
+      perfect:  { icon: '🏆', title: 'Parfait !',             msg: 'Flawless! The whole Côte d\'Azur will be impressed.' },
+      great:    { icon: '🌊', title: 'Excellent !',            msg: 'Almost perfect — you\'ll have no trouble on your vacation!' },
+      good:     { icon: '🏖️', title: 'Très bien !',            msg: 'Solid effort! A little more practice and you\'ll feel right at home in France.' },
+      ok:       { icon: '🐚', title: 'Pas mal.',               msg: 'Not bad! Keep practising and those phrases will stick.' },
       retry:    { icon: '☀️', title: 'Continuez d\'essayer !', msg: 'Every expert was once a beginner. Try again — vous pouvez le faire !' },
     },
   },
@@ -89,10 +89,10 @@ const LANG_CONFIG = {
 
 // ─── State ────────────────────────────────────────────────────────────────────
 
-let currentLang      = 'es';
+let currentLang       = 'es';
 let shuffledQuestions = [];
-let currentIndex     = 0;
-let score            = 0;
+let currentIndex      = 0;
+let score             = 0;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -108,25 +108,62 @@ function shuffle(arr) {
 function show(id) { document.getElementById(id).classList.remove('hidden'); }
 function hide(id) { document.getElementById(id).classList.add('hidden'); }
 
+// ─── Player name (localStorage) ───────────────────────────────────────────────
+
+const NAME_KEY = 'quizPlayerName';
+
+function getName()       { return (localStorage.getItem(NAME_KEY) || '').trim(); }
+function saveName(name)  { localStorage.setItem(NAME_KEY, name.trim()); }
+
+function updateStartBtn() {
+  const name = document.getElementById('player-name').value.trim();
+  document.getElementById('start-btn').disabled = !name;
+}
+
+function initName() {
+  const input = document.getElementById('player-name');
+  input.value = getName();
+  updateStartBtn();
+  input.addEventListener('input', () => {
+    saveName(input.value);
+    updateStartBtn();
+  });
+}
+
+// ─── API (fire-and-forget, graceful on failure) ────────────────────────────────
+
+let _toastTimer = null;
+
+function showSaveError() {
+  const toast = document.getElementById('save-toast');
+  toast.textContent = '⚠️ Couldn\'t save to server — playing offline.';
+  toast.classList.add('visible');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => toast.classList.remove('visible'), 4500);
+}
+
+function apiPost(endpoint, data) {
+  fetch(endpoint, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify(data),
+  }).catch(showSaveError);
+}
+
 // ─── Language switcher ────────────────────────────────────────────────────────
 
 function setLanguage(lang) {
   currentLang = lang;
   const cfg = LANG_CONFIG[lang];
 
-  // Body class drives CSS custom-property theme
   document.body.classList.remove('lang-es', 'lang-fr');
   document.body.classList.add(`lang-${lang}`);
 
-  // Header
   document.getElementById('header-title').textContent    = cfg.heading;
   document.getElementById('header-subtitle').textContent = cfg.subtitle;
+  document.getElementById('start-intro').textContent     = cfg.intro;
+  document.getElementById('start-emoji').textContent     = cfg.emoji;
 
-  // Start screen copy
-  document.getElementById('start-intro').textContent = cfg.intro;
-  document.getElementById('start-emoji').textContent  = cfg.emoji;
-
-  // Tab active states
   document.querySelectorAll('.lang-tab').forEach(btn => {
     const isActive = btn.dataset.lang === lang;
     btn.classList.toggle('active', isActive);
@@ -137,6 +174,10 @@ function setLanguage(lang) {
 // ─── Quiz logic ───────────────────────────────────────────────────────────────
 
 function startQuiz() {
+  const name = document.getElementById('player-name').value.trim();
+  if (!name) return;
+  saveName(name);
+
   shuffledQuestions = shuffle(QUESTIONS[currentLang]);
   currentIndex      = 0;
   score             = 0;
@@ -148,62 +189,63 @@ function startQuiz() {
 }
 
 function renderQuestion() {
-  const q   = shuffledQuestions[currentIndex];
-  const cfg = LANG_CONFIG[currentLang];
+  const q     = shuffledQuestions[currentIndex];
+  const cfg   = LANG_CONFIG[currentLang];
   const total = shuffledQuestions.length;
 
-  // Progress
   document.getElementById('progress-bar').style.width =
     `${(currentIndex / total) * 100}%`;
   document.getElementById('question-count').textContent =
     `Question ${currentIndex + 1} of ${total}`;
   document.getElementById('score-label').textContent = `Score: ${score}`;
-
-  // Language badge
-  document.getElementById('lang-badge').textContent =
-    `${cfg.flag} ${cfg.label}`;
-
-  // Prompt + phrase
+  document.getElementById('lang-badge').textContent  = `${cfg.flag} ${cfg.label}`;
   document.getElementById('quiz-prompt').textContent = cfg.prompt;
   document.getElementById('phrase').textContent      = q.phrase;
 
-  // Reset feedback & next button
   const feedback = document.getElementById('feedback');
-  feedback.className  = 'feedback hidden';
+  feedback.className   = 'feedback hidden';
   feedback.textContent = '';
   document.getElementById('next-btn').classList.add('hidden');
 
-  // Build shuffled answer buttons
   const choicesEl = document.getElementById('choices');
   choicesEl.innerHTML = '';
   shuffle([q.correct, ...q.wrong]).forEach(choice => {
     const btn = document.createElement('button');
     btn.className   = 'choice-btn';
     btn.textContent = choice;
-    btn.addEventListener('click', () => handleAnswer(choice, q.correct));
+    btn.addEventListener('click', () => handleAnswer(choice, q));
     choicesEl.appendChild(btn);
   });
 }
 
-function handleAnswer(selected, correct) {
-  const cfg = LANG_CONFIG[currentLang];
+function handleAnswer(selected, q) {
+  const cfg       = LANG_CONFIG[currentLang];
+  const isCorrect = selected === q.correct;
+  if (isCorrect) score++;
 
   document.querySelectorAll('.choice-btn').forEach(btn => {
     btn.disabled = true;
-    if (btn.textContent === correct) btn.classList.add('correct');
+    if (btn.textContent === q.correct) btn.classList.add('correct');
     else if (btn.textContent === selected) btn.classList.add('wrong');
   });
-
-  const isCorrect = selected === correct;
-  if (isCorrect) score++;
 
   const feedback = document.getElementById('feedback');
   feedback.textContent = isCorrect
     ? cfg.correct
-    : `✗ The answer was: "${correct}"`;
+    : `✗ The answer was: "${q.correct}"`;
   feedback.className = `feedback ${isCorrect ? 'correct' : 'wrong'}`;
 
   document.getElementById('next-btn').classList.remove('hidden');
+
+  // Persist to DB (fire and forget)
+  apiPost('/api/answer', {
+    name:       getName(),
+    language:   currentLang,
+    phrase:     q.phrase,
+    selected,
+    correct:    q.correct,
+    is_correct: isCorrect,
+  });
 }
 
 function nextQuestion() {
@@ -219,17 +261,25 @@ function showResults() {
   document.getElementById('progress-bar').style.width = '100%';
   document.getElementById('final-score').textContent  = `${score} / 20`;
 
-  const pct = score / 20;
-  const r   = LANG_CONFIG[currentLang].results;
-  const tier = pct === 1   ? r.perfect
-             : pct >= 0.8  ? r.great
-             : pct >= 0.6  ? r.good
-             : pct >= 0.4  ? r.ok
+  const pct  = score / 20;
+  const r    = LANG_CONFIG[currentLang].results;
+  const tier = pct === 1  ? r.perfect
+             : pct >= 0.8 ? r.great
+             : pct >= 0.6 ? r.good
+             : pct >= 0.4 ? r.ok
              :               r.retry;
 
   document.getElementById('result-icon').textContent    = tier.icon;
   document.getElementById('result-title').textContent   = tier.title;
   document.getElementById('result-message').textContent = tier.msg;
+
+  // Save quiz summary to DB (fire and forget)
+  apiPost('/api/quiz-complete', {
+    name:     getName(),
+    language: currentLang,
+    score,
+    total:    shuffledQuestions.length,
+  });
 }
 
 // ─── Event listeners ──────────────────────────────────────────────────────────
@@ -244,3 +294,6 @@ document.getElementById('restart-btn').addEventListener('click', () => {
   hide('result-screen');
   show('start-screen');
 });
+
+// Initialise name field on load
+initName();

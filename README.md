@@ -1,6 +1,27 @@
 # 🏖️ Language Travel Quiz
 
-A lightweight, browser-based language quiz to help you practise essential travel phrases before your Mediterranean vacation. No frameworks, no dependencies — just HTML, CSS, and Vanilla JavaScript.
+A browser-based language quiz to practise essential travel phrases before your Mediterranean vacation. Pick the correct English translation for Spanish or French phrases — with a SQLite backend that remembers your progress across visits.
+
+---
+
+## 🚀 Quick Start
+
+```bash
+# 1. Install dependencies (first time only)
+npm install
+
+# 2. Start the server
+npm start
+```
+
+Then open your browser:
+
+| Page | URL |
+|---|---|
+| Quiz | http://localhost:3000/ |
+| My History | http://localhost:3000/history.html |
+
+The database file (`quiz.db`) is created automatically the first time the server runs — no setup needed.
 
 ---
 
@@ -15,15 +36,18 @@ A lightweight, browser-based language quiz to help you practise essential travel
 
 ## ✨ Features
 
-- **20 common travel phrases** per language covering greetings, directions, dining, accommodation, and more
-- **Multiple choice** — pick the correct English translation from 4 options
+- **Name persistence** — type your name once; it's saved in the browser so you never have to retype it
+- **20 travel phrases per language** — greetings, directions, dining, accommodation, and more
+- **Multiple choice** — 4 options per question, shuffled every time
 - **Randomised question order** on every visit
-- **Shuffled answer options** so the correct answer is never in the same position
-- **Instant feedback** — correct answers highlighted in green, wrong ones in red with the correct answer revealed
-- **Live progress bar** and score tracker throughout the quiz
-- **5-tier results screen** with a personalised message based on your score
-- **Language switcher** — toggle between Spanish and French on the start screen; the entire colour theme changes to match
-- **Language badge** visible during the quiz so you always know which language you're practising
+- **Instant feedback** — green for correct, red for wrong with the right answer shown
+- **Live progress bar** + score tracker throughout the quiz
+- **5-tier results screen** with a personalised message
+- **Language switcher** — toggle Spanish ↔ French; the entire colour theme changes
+- **Language badge** during the quiz so you always know which language you're practising
+- **SQLite backend** — every answer and quiz summary is saved as you play
+- **My History page** — see all your past attempts and every individual question you've answered, colour-coded green/red
+- **Offline-friendly** — if the server is unreachable the quiz keeps working; a small toast tells you answers couldn't be saved
 - **Mediterranean beach aesthetic** with animated wave background
 
 ---
@@ -32,28 +56,50 @@ A lightweight, browser-based language quiz to help you practise essential travel
 
 ```
 spanish-quiz/
-├── index.html   # App structure and all three screens (start / quiz / results)
-├── styles.css   # Mediterranean theme with CSS custom properties per language
-└── quiz.js      # Question banks, quiz logic, and language switching
+├── server.js       # Express + better-sqlite3 backend (API + static file serving)
+├── package.json    # Node dependencies
+├── quiz.db         # SQLite database (auto-created, git-ignored)
+│
+├── index.html      # Quiz page (start / quiz / results screens)
+├── quiz.js         # Quiz logic, language switching, API calls
+│
+├── history.html    # History page
+├── history.js      # Fetches and renders quiz history
+│
+├── styles.css      # Shared Mediterranean theme (quiz + history)
+│
+├── .gitignore      # Excludes node_modules/ and *.db
+└── README.md
 ```
 
 ---
 
-## 🚀 How to Use
+## 🗄️ Database
 
-1. Clone or download the repository
-2. Open `index.html` in any modern browser — no server or build step needed
-3. Select your language (🇪🇸 Spanish or 🇫🇷 French) on the start screen
-4. Click **Start Quiz** and choose the correct English translation for each phrase
-5. Review your score at the end and click **Try Again** to reshuffle and replay
+The SQLite database lives at `quiz.db` in the project folder. You can inspect it with the `sqlite3` command-line tool:
 
----
+```bash
+sqlite3 quiz.db
 
-## 📸 Screenshots
+# Show all tables
+.tables
 
-| Start Screen | Quiz Screen | Results Screen |
-|---|---|---|
-| Language selector tabs with themed colours | Phrase displayed with 4 answer choices | Score, personalised message, and replay option |
+# See every answer Sandra has logged
+SELECT * FROM question_answers WHERE name = 'Sandra';
+
+# See all quiz summaries, newest first
+SELECT * FROM quiz_summaries ORDER BY completed_at DESC;
+
+# Exit
+.quit
+```
+
+**Tables:**
+
+| Table | What it stores |
+|---|---|
+| `question_answers` | Every individual question answered — name, language, phrase, selected answer, correct answer, right/wrong flag, timestamp |
+| `quiz_summaries` | One row per completed quiz — name, language, score, total questions, timestamp |
 
 ---
 
@@ -69,9 +115,9 @@ spanish-quiz/
 
 ## 🛠️ Built With
 
-- HTML5
-- CSS3 (custom properties, animations, responsive design)
-- Vanilla JavaScript (ES6+)
+- **Node.js + Express** — lightweight static file server + REST API
+- **better-sqlite3** — fast, synchronous SQLite driver
+- **HTML5 / CSS3 / Vanilla JavaScript** — no frameworks, no build tools
 
 ---
 
